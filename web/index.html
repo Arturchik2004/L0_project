@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестовый сервис</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="header">
+        <div class="logo">Микросервис заказов</div>        
+</div>
+<div class="container">
+    
+    <h3>Поиск информации о заказе</h3>
+    <p>Введите уникальный идентификатор (Order UID) для получения деталей.</p>
+    <div class="search-box">
+        <input type="text" id="orderUidInput" placeholder="b563feb7b2b84b6test" autofocus>
+        <button id="searchButton" disabled>Найти</button>
+        <div class="loader hidden" id="loader"></div>
+    </div>
+
+    <div id="resultContainer" class="result-container hidden">
+    </div>
+
+    <div id="errorContainer" class="error-container hidden">
+    </div>
+
+    <h2 id="recent-title" class="hidden">Последние 10 заказов</h2>
+    <div id="recentOrdersContainer" class="recent-orders-container">
+    </div>
+</div>
+
+<script src="/static/js/script.js"></script>
+
+</body>
+</html>

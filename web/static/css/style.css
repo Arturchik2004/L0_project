@@ -1,0 +1,211 @@
+:root {
+    --wb-purple: #6610f2;
+    --wb-purple-dark: #520dc2;
+    --background-color: #f8f8fa;
+    --text-color: #212529;
+    --card-background: #ffffff;
+    --border-color: #dee2e6;
+    --error-color: #dc3545;
+    --font-family: 'Inter', sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    background-color: #fff;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.logo span {
+    color: var(--wb-purple);
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem 1rem;
+}
+
+header {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+header p {
+    color: #6c757d;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.search-box {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+#orderUidInput {
+    flex-grow: 1;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#orderUidInput:focus {
+    outline: none;
+    border-color: var(--wb-purple);
+    box-shadow: 0 0 0 3px rgba(102, 16, 242, 0.2);
+}
+
+#searchButton {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #fff;
+    background-color: var(--wb-purple);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#searchButton:hover {
+    background-color: var(--wb-purple-dark);
+}
+
+#searchButton:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.result-container, #recentOrdersContainer {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.card {
+    background: var(--card-background);
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.grid-item {
+    line-height: 1.6;
+    word-wrap: break-word;
+}
+
+.grid-item strong {
+    color: #495057;
+}
+
+.item-card {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+.item-card:first-child {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.error-container {
+    background-color: #f8d7da;
+    color: var(--error-color);
+    border: 1px solid #f5c6cb;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.loader-wrapper {
+    position: absolute;
+    right: 120px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.loader {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--wb-purple);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#recentOrdersContainer h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.recent-order-card {
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.recent-order-card:hover {
+    border-color: var(--wb-purple);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
