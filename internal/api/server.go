@@ -30,3 +30,12 @@ func StartServer(port string, router *chi.Mux) error {
 	fmt.Printf("Сервер запущен на http://localhost%s\n", addr)
 	return http.ListenAndServe(addr, router)
 }
+
+// NewServer создаёт http.Server, который можно плавно останавливать
+func NewServer(port string, router *chi.Mux) *http.Server {
+	addr := fmt.Sprintf(":%s", port)
+	return &http.Server{
+		Addr:    addr,
+		Handler: router,
+	}
+}

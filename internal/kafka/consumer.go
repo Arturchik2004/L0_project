@@ -8,16 +8,18 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/segmentio/kafka-go"
 )
 
 type Consumer struct {
-	reader *kafka.Reader
-	db     *database.Storage
-	cache  cache.Cache
+	reader   *kafka.Reader
+	db       database.OrderStorage
+	cache    cache.OrderCache
+	validate *validator.Validate
 }
 
-func NewConsumer(brokers []string, topic, groupID string, db *database.Storage, cache cache.Cache) *Consumer {
+func NewConsumer(brokers []string, topic, groupID string, db database.OrderStorage, cache cache.OrderCache) *Consumer {
 	r := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:  brokers,
 		GroupID:  groupID,
@@ -25,7 +27,7 @@ func NewConsumer(brokers []string, topic, groupID string, db *database.Storage, 
 		MinBytes: 10e3,
 		MaxBytes: 10e6,
 	})
-	return &Consumer{reader: r, db: db, cache: cache}
+	return &Consumer{reader: r, db: db, cache: cache, validate: validator.New()}
 }
 
 func (c *Consumer) Start(ctx context.Context) {
@@ -50,13 +52,21 @@ func (c *Consumer) Start(ctx context.Context) {
 				continue
 			}
 
+			if c.validate != nil {
+				if err := c.validate.Struct(&order); err != nil {
+					log.Printf("невалидные данные в заказе %s: %v", order.OrderUID, err)
+					c.reader.CommitMessages(ctx, m)
+					continue
+				}
+			}
+
 			if err := c.db.SaveOrder(ctx, &order); err != nil {
 				log.Printf("не удалось сохранить заказ %s в базу данных: %v", order.OrderUID, err)
 				continue
 			}
 
 			log.Printf("Заказ %s успешно сохранен в базу данных", order.OrderUID)
-			c.cache.Set(order.OrderUID, &order)
+			c.cache.Add(order.OrderUID, &order)
 			log.Printf("Заказ %s успешно закэширован", order.OrderUID)
 
 			if err := c.reader.CommitMessages(ctx, m); err != nil {

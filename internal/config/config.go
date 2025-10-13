@@ -12,7 +12,7 @@ type Config struct {
 		Port string `env:"HTTP_PORT" env-default:"8081"`
 	}
 	Postgres struct {
-		URL string `env:"POSTGRES_URL" env-default:"postgres://user:password@localhost:5432/orders_db?sslmode=disable"`
+		URL string `env:"POSTGRES_URL" env-default:"postgres://postgres:123@localhost:5432/GoLangWB?sslmode=disable"`
 	}
 	Kafka struct {
 		Brokers []string `env:"KAFKA_BROKERS" env-default:"localhost:9092"`

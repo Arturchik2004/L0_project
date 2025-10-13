@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -22,9 +23,7 @@ func main() {
 	}
 	defer db.Close()
 
-	if err := db.ApplyMigrations("./internal/database/schema.sql"); err != nil {
-		log.Fatalf("Не удалось применить migrations: %v", err)
-	}
+	// Миграции теперь выполняются вне кода (см. migrations/).
 
 	orderCache := cache.NewLRUCache(cfg.Cache.Size)
 
@@ -35,7 +34,7 @@ func main() {
 	} else {
 		for _, order := range orders {
 			orderCopy := order
-			orderCache.Set(order.OrderUID, &orderCopy)
+			orderCache.Add(order.OrderUID, &orderCopy)
 		}
 		log.Printf("Кеш прогрет. Загружено %d заказов.", len(orders))
 	}
@@ -47,17 +46,37 @@ func main() {
 	handler := api.NewHandler(db, orderCache)
 	router := api.NewRouter(handler)
 
+	srv := api.NewServer(cfg.HTTP.Port, router)
+
+	// Запускаем HTTP сервер в отдельной горутине
+	serverErr := make(chan error, 1)
 	go func() {
-		if err := api.StartServer(cfg.HTTP.Port, router); err != nil {
-			log.Fatalf("не удалось запустить http сервер: %v", err)
-		}
+		serverErr <- srv.ListenAndServe()
 	}()
 
+	// Ожидаем сигнал завершения или ошибку сервера
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+
+	select {
+	case <-quit:
+		log.Println("Получен сигнал завершения")
+	case err := <-serverErr:
+		if err != nil {
+			log.Printf("HTTP сервер завершился с ошибкой: %v", err)
+		}
+	}
 
 	log.Println("Завершение работы приложения...")
+	// Сигнал для остановки consumer
 	cancel()
+
+	// Плавно останавливаем HTTP сервер
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdownCancel()
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Printf("Ошибка при остановке сервера: %v", err)
+	}
+
 	log.Println("Приложение было успешно остановлено.")
 }

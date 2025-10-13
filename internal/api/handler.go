@@ -11,11 +11,11 @@ import (
 )
 
 type Handler struct {
-	db    *database.Storage
-	cache cache.Cache
+	db    database.OrderStorage
+	cache cache.OrderCache
 }
 
-func NewHandler(db *database.Storage, cache cache.Cache) *Handler {
+func NewHandler(db database.OrderStorage, cache cache.OrderCache) *Handler {
 	return &Handler{db: db, cache: cache}
 }
 
@@ -41,7 +41,7 @@ func (h *Handler) GetOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.cache.Set(orderUID, order)
+	h.cache.Add(orderUID, order)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(order)
