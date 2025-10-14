@@ -1,17 +1,18 @@
 package main
 
 import (
-	"L0_project/internal/api"
-	"L0_project/internal/cache"
-	"L0_project/internal/config"
-	"L0_project/internal/database"
-	"L0_project/internal/kafka"
 	"context"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"L0_project/internal/api"
+	"L0_project/internal/cache"
+	"L0_project/internal/config"
+	"L0_project/internal/database"
+	"L0_project/internal/kafka"
 )
 
 func main() {
@@ -48,13 +49,11 @@ func main() {
 
 	srv := api.NewServer(cfg.HTTP.Port, router)
 
-	// Запускаем HTTP сервер в отдельной горутине
 	serverErr := make(chan error, 1)
 	go func() {
 		serverErr <- srv.ListenAndServe()
 	}()
 
-	// Ожидаем сигнал завершения или ошибку сервера
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
@@ -68,10 +67,9 @@ func main() {
 	}
 
 	log.Println("Завершение работы приложения...")
-	// Сигнал для остановки consumer
+
 	cancel()
 
-	// Плавно останавливаем HTTP сервер
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdownCancel()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
